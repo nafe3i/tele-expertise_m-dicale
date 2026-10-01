@@ -7,7 +7,7 @@ CREATE TABLE users (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role ENUM('INFIRMIER', 'GENERALISTE') NOT NULL,
+    role ENUM('INFIRMIER', 'MEDECIN') NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -17,6 +17,7 @@ CREATE TABLE patients (
     first_name VARCHAR(100) NOT NULL,
     birth_date DATE NOT NULL,
     social_security_number VARCHAR(50) NOT NULL UNIQUE,
+
     blood_pressure VARCHAR(30) NOT NULL,
     heart_rate INT NOT NULL,
     temperature DECIMAL(4,1) NOT NULL,
@@ -35,7 +36,7 @@ CREATE TABLE consultations (
     observations TEXT NOT NULL,
     diagnosis TEXT NOT NULL,
     prescribed_treatment TEXT NOT NULL,
-    cost DECIMAL(10,2) NOT NULL,
+    cost DECIMAL(10,2) NOT NULL DEFAULT 150.00,
     status ENUM('TERMINEE') NOT NULL,
     closed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_consultations_patient
