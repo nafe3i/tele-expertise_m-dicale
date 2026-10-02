@@ -1,28 +1,23 @@
 package ma.youcode.clinic.config;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 
-public class DatabaseConfig {
+public final class DatabaseConfig {
 
-    private static DataSource dataSource;
-
-    static {
+    public DataSource getDataSource() {
         try {
-            Context initContext = new InitialContext();
-            Context envContext  = (Context) initContext.lookup("java:/comp/env");
-            dataSource = (DataSource) envContext.lookup("jdbc/CliniqueDB");
-        } catch (NamingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erreur d'initialisation du DataSource JNDI", e);
-        }
-    }
+            InitialContext context = new InitialContext();
 
-    public static Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+            return (DataSource) context.lookup(
+                "java:comp/env/jdbc/GestionClinique"
+            );
+        } catch (NamingException exception) {
+            throw new IllegalStateException(
+                "Le DataSource jdbc/GestionClinique est introuvable.",
+                exception
+            );
+        }
     }
 }
