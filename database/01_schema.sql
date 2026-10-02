@@ -53,6 +53,6 @@ CREATE INDEX idx_patients_arrived_at ON patients(arrived_at);
 CREATE INDEX idx_consultations_patient_id ON consultations(patient_id);
 
 -- Mot de passe pour tous les comptes de test : "password123"
-INSERT INTO utilisateurs (username, password, role) VALUES 
+INSERT INTO users (username, password_hash, role) VALUES 
 ('infirmier1', '$2a$10$e8R6.V5z.S5vQfB83F3Yje4x2D90yR8yO8DqQ0X4U5x/A3G1f2h4G', 'INFIRMIER'),
 ('medecin1', '$2a$10$e8R6.V5z.S5vQfB83F3Yje4x2D90yR8yO8DqQ0X4U5x/A3G1f2h4G', 'MEDECIN');

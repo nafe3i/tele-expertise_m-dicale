@@ -12,4 +12,6 @@ public interface PatientDAO {
     Optional<Patient> findBySocialSecurityNumber(String socialSecurityNumber);
 
     List<Patient> findAll();
+
+    Optional<Patient> findById(Long id);
 }

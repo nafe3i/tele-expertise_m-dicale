@@ -2,5 +2,5 @@ package ma.youcode.clinic.entity;
 
 
 public enum ConsultationStatus {
-    TERMINEE
+    TERMINEE,EN_COURS
 }
