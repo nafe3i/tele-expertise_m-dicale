@@ -35,6 +35,13 @@ public class Patient {
         this.respiratoryRate = respiratoryRate;
         this.arrivedAt = arrivedAt;
     }
+//     public Patient(String bloodPressure,Integer heartRate,BigDecimal temperature,Integer respiratoryRate,LocalDateTime arrivedAt){
+//         this.bloodPressure = bloodPressure;
+//         this.heartRate = heartRate;
+//         this.temperature = temperature;
+//         this.respiratoryRate = respiratoryRate;
+//         this.arrivedAt = arrivedAt;
+// }
 
     public Long getId() {
         return id;
