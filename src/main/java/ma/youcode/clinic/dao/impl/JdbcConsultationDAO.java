@@ -28,8 +28,18 @@ public class JdbcConsultationDAO implements ConsultationDAO {
         """;
 
     private static final String UPDATE_SQL = """
-            UPDATE consultations SET doctor_id=?,reason=?,observations=?,diagnosis=?,prescribed_treatment=?,cost=?,status='TERMINEE',closed_at=CURRENT_TIMESTAMP WHERE id= ?
-            """;
+        UPDATE consultations
+        SET doctor_id = ?,
+            reason = ?,
+            observations = ?,
+            diagnosis = ?,
+            prescribed_treatment = ?,
+            cost = ?,
+            status = ?,
+            closed_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+          AND status = ?
+        """;
     private static final String FIND_BY_ID_SQL = """
             SELECT * FROM consultations WHERE id = ?
             """;
@@ -90,7 +100,9 @@ public class JdbcConsultationDAO implements ConsultationDAO {
             statement.setString(4, consultation.getDiagnosis());
             statement.setString(5, consultation.getPrescribedTreatment());
             statement.setBigDecimal(6, consultation.getCost());
-            statement.setLong(7, consultation.getId());
+            statement.setString(7, consultation.getStatus().name());
+            statement.setLong(8, consultation.getId());
+            statement.setString(9, ConsultationStatus.EN_ATTENTE.name());
 
             int affectedRows = statement.executeUpdate();
 
