@@ -1,5 +1,7 @@
 package ma.youcode.clinic.web.servlet;
 
+import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,8 +14,6 @@ import ma.youcode.clinic.service.UserService;
 import ma.youcode.clinic.web.security.AuthenticatedUser;
 import ma.youcode.clinic.web.security.CsrfTokenManager;
 import ma.youcode.clinic.web.security.SessionAttributes;
-
-import java.io.IOException;
 
 @WebServlet(urlPatterns = {"/login", "/logout"})
 public class AuthServlet extends HttpServlet {

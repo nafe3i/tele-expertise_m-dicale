@@ -6,10 +6,9 @@ import java.util.Optional;
 import ma.youcode.clinic.entity.Patient;
 
 public interface PatientDAO {
-
+    Optional<Patient> findById(Long id);
     Patient save(Patient patient);
-
+    Patient updateVitalSigns(Patient patient);
     Optional<Patient> findBySocialSecurityNumber(String socialSecurityNumber);
-
     List<Patient> findAll();
 }
