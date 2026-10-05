@@ -68,13 +68,16 @@ public class PatientService {
             registeredPatient
                     = patientDAO.updateVitalSigns(patientToUpdate);
         }
-        Consultation consultation = new Consultation();
-        consultation.setPatientId(registeredPatient.getId());
-        consultation.setStatus(ConsultationStatus.EN_ATTENTE);
-
+        // Consultation consultation = new Consultation();
+        // consultation.setPatientId(registeredPatient.getId());
+        // consultation.setStatus(ConsultationStatus.EN_ATTENTE);
+        Consultation consultation = new Consultation(
+                null,
+                registeredPatient.getId(),
+                ConsultationStatus.EN_ATTENTE
+        );
         consultationDAO.save(consultation);
 
-        
         return registeredPatient;
     }
 

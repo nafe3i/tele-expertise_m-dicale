@@ -137,7 +137,7 @@ public class JdbcPatientDAO implements PatientDAO {
             //         5,
             //         Timestamp.valueOf(patient.getArrivedAt())
             // );
-            statement.setLong(5, patient.getId());
+            statement.setLong(5 , patient.getId());
 
             int affectedRows = statement.executeUpdate();
 

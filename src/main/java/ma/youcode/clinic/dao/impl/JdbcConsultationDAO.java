@@ -33,12 +33,17 @@ public class JdbcConsultationDAO implements ConsultationDAO {
     private static final String FIND_BY_ID_SQL = """
             SELECT * FROM consultations WHERE id = ?
             """;
-    private static final String FIND_PENDING_DATE_SQL = """
-        SELECT * FROM consultations  WHERE status = ?
+    private static final String FIND_PENDING_BY_DATE_SQL = """
+        SELECT
+            id,
+            patient_id,
+            status
+        FROM consultations
+        WHERE status = ?
           AND created_at >= ?
           AND created_at < ?
-        ORDER BY created_at ASC    
-    """;
+        ORDER BY created_at ASC
+        """;
     private final DataSource dataSource;
 
     public JdbcConsultationDAO(DataSource dataSource) {
@@ -101,31 +106,30 @@ public class JdbcConsultationDAO implements ConsultationDAO {
 
     @Override
     public Optional<Consultation> findById(Long id) {
-        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+        try (
+                Connection connection
+                = dataSource.getConnection(); PreparedStatement statement
+                = connection.prepareStatement(
+                        FIND_BY_ID_SQL
+                )) {
             statement.setLong(1, id);
-            try (ResultSet resultSet = statement.executeQuery()) {
+
+            try (ResultSet resultSet
+                    = statement.executeQuery()) {
                 if (!resultSet.next()) {
                     return Optional.empty();
                 }
-                // return 
-                Consultation consultation = new Consultation();
-                consultation.setId(resultSet.getLong("id"));
-                consultation.setPatientId(resultSet.getLong("patient_id"));
-                consultation.setDoctorId(resultSet.getLong("doctor_id"));
-                consultation.setReason(resultSet.getString("reason"));
-                consultation.setObservations(resultSet.getString("observations"));
-                consultation.setDiagnosis(resultSet.getString("diagnosis"));
-                consultation.setPrescribedTreatment(resultSet.getString("prescribed_treatment"));
-                consultation.setCost(resultSet.getBigDecimal("cost"));
-                consultation.setStatus(ConsultationStatus.valueOf(resultSet.getString("status")));
-                consultation.setClosedAt(resultSet.getTimestamp("closed_at") != null ? resultSet.getTimestamp("closed_at").toLocalDateTime() : null);
-                return Optional.of(consultation);
+
+                return Optional.of(
+                        mapConsultation(resultSet)
+                );
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding consultation by ID", e);
+            throw new RuntimeException(
+                    "Erreur pendant la recherche de la consultation.",
+                    e
+            );
         }
-        // } catch (SQLException e) {
-        // }
     }
 
     @Override
@@ -134,7 +138,7 @@ public class JdbcConsultationDAO implements ConsultationDAO {
                 Connection connection
                 = dataSource.getConnection(); PreparedStatement statement
                 = connection.prepareStatement(
-                        FIND_PENDING_DATE_SQL
+                        FIND_PENDING_BY_DATE_SQL
                 )) {
             statement.setString(
                     1,
@@ -157,17 +161,15 @@ public class JdbcConsultationDAO implements ConsultationDAO {
                         = new ArrayList<>();
 
                 while (resultSet.next()) {
-                    Consultation consultation = new Consultation();
-                    consultation.setId(resultSet.getLong("id"));
-                    consultation.setPatientId(resultSet.getLong("patient_id"));
-                    consultation.setDoctorId(resultSet.getLong("doctor_id"));
-                    consultation.setReason(resultSet.getString("reason"));
-                    consultation.setObservations(resultSet.getString("observations"));
-                    consultation.setDiagnosis(resultSet.getString("diagnosis"));
-                    consultation.setPrescribedTreatment(resultSet.getString("prescribed_treatment"));
-                    consultation.setCost(resultSet.getBigDecimal("cost"));
-                    consultation.setStatus(ConsultationStatus.valueOf(resultSet.getString("status")));
-                    consultation.setClosedAt(resultSet.getTimestamp("closed_at") != null ? resultSet.getTimestamp("closed_at").toLocalDateTime() : null);
+                    Consultation consultation
+                            = new Consultation(
+                                    resultSet.getLong("id"),
+                                    resultSet.getLong("patient_id"),
+                                    ConsultationStatus.valueOf(
+                                            resultSet.getString("status")
+                                    )
+                            );
+
                     consultations.add(consultation);
                 }
 
@@ -179,6 +181,30 @@ public class JdbcConsultationDAO implements ConsultationDAO {
                     e
             );
         }
+    }
+
+    private Consultation mapConsultation(
+            ResultSet resultSet
+    ) throws SQLException {
+        Timestamp closedAt
+                = resultSet.getTimestamp("closed_at");
+
+        return new Consultation(
+                resultSet.getLong("id"),
+                resultSet.getLong("patient_id"),
+                resultSet.getObject("doctor_id", Long.class),
+                resultSet.getString("reason"),
+                resultSet.getString("observations"),
+                resultSet.getString("diagnosis"),
+                resultSet.getString("prescribed_treatment"),
+                resultSet.getBigDecimal("cost"),
+                ConsultationStatus.valueOf(
+                        resultSet.getString("status")
+                ),
+                closedAt == null
+                        ? null
+                        : closedAt.toLocalDateTime()
+        );
     }
 
 }
