@@ -14,6 +14,7 @@ import ma.youcode.clinic.service.UserService;
 import ma.youcode.clinic.web.security.AuthenticatedUser;
 import ma.youcode.clinic.web.security.CsrfTokenManager;
 import ma.youcode.clinic.web.security.SessionAttributes;
+import  ma.youcode.clinic.entity.Role;
 
 @WebServlet(urlPatterns = {"/login", "/logout"})
 public class AuthServlet extends HttpServlet {
@@ -92,7 +93,11 @@ public class AuthServlet extends HttpServlet {
         HttpSession session = request.getSession();
         request.setAttribute("authenticatedUser", user);
         request.setAttribute("csrfToken", csrfTokenManager.getOrCreate(session));
-        request.getRequestDispatcher("/WEB-INF/views/auth/connected.jsp").forward(request, response);
+        if(user.getRole().equals(Role.INFIRMIER)){
+            request.getRequestDispatcher("/WEB-INF/views/auth/dashboard-infirmier.jsp").forward(request, response);
+            return ;
+        }
+        request.getRequestDispatcher("/WEB-INF/views/auth/dashboard-medecin.jsp").forward(request, response);
     }
 
     private boolean isLogoutRequest(HttpServletRequest request) {
