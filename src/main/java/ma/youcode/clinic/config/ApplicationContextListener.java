@@ -1,13 +1,13 @@
 package ma.youcode.clinic.config;
 
+import javax.sql.DataSource;
+
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import ma.youcode.clinic.dao.UserDAO;
 import ma.youcode.clinic.dao.impl.JdbcUserDAO;
 import ma.youcode.clinic.service.UserService;
-
-import javax.sql.DataSource;
 
 @WebListener
 public class ApplicationContextListener implements ServletContextListener {
