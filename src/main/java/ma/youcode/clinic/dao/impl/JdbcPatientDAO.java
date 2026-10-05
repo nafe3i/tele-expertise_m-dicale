@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -123,7 +122,8 @@ public class JdbcPatientDAO implements PatientDAO {
                 heart_rate = ?,
                 temperature = ?,
                 respiratory_rate = ?,
-                arrived_at = ?
+                arrived_at = CURRENT_TIMESTAMP
+
             WHERE id = ?
             """;
 
@@ -133,11 +133,11 @@ public class JdbcPatientDAO implements PatientDAO {
             statement.setInt(2, patient.getHeartRate());
             statement.setBigDecimal(3, patient.getTemperature());
             statement.setInt(4, patient.getRespiratoryRate());
-            statement.setTimestamp(
-                    5,
-                    Timestamp.valueOf(patient.getArrivedAt())
-            );
-            statement.setLong(6, patient.getId());
+            // statement.setTimestamp(
+            //         5,
+            //         Timestamp.valueOf(patient.getArrivedAt())
+            // );
+            statement.setLong(5 , patient.getId());
 
             int affectedRows = statement.executeUpdate();
 
