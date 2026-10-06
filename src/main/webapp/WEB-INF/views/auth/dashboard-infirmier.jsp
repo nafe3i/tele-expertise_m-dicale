@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -43,7 +44,19 @@
                 <i class="bi bi-person-plus-fill text-indigo-600 mr-2"></i> Admission Patient
             </h2>
 
-            <form action="${pageContext.request.contextPath}/infirmier/patient" method="post" class="space-y-4">
+            <c:if test="${not empty errorMessage}">
+                <div class="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+                    <c:out value="${errorMessage}"/>
+                </div>
+            </c:if>
+
+            <c:if test="${param.success == 'registered'}">
+                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+                    Le patient et sa consultation en attente ont été enregistrés.
+                </div>
+            </c:if>
+
+            <form action="${pageContext.request.contextPath}/nurse/patients" method="post" class="space-y-4">
                 <input type="hidden" name="_csrf" value="${csrfToken}">
 
                 <div>
@@ -103,7 +116,7 @@
                     <i class="bi bi-people-fill text-indigo-600 mr-2"></i> Patients Admis Aujourd'hui
                 </h2>
                 <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-1 rounded-full">
-                    ${patientsToday.size()} Patient(s)
+                    ${fn:length(patientsToday)} Patient(s)
                 </span>
             </div>
 

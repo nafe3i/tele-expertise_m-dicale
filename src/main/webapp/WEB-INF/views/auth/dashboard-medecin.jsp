@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -41,15 +41,27 @@
                 <i class="bi bi-journal-plus text-teal-600 mr-2"></i> Nouvelle Consultation
             </h2>
 
-            <form action="${pageContext.request.contextPath}/medecin/consultation" method="post" class="space-y-4">
+            <c:if test="${not empty errorMessage}">
+                <div class="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+                    <c:out value="${errorMessage}"/>
+                </div>
+            </c:if>
+
+            <c:if test="${param.success == 'closed'}">
+                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+                    La consultation a été clôturée avec succès.
+                </div>
+            </c:if>
+
+            <form action="${pageContext.request.contextPath}/doctor/consultations" method="post" class="space-y-4">
                 <input type="hidden" name="_csrf" value="${csrfToken}">
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Sélectionner Patient</label>
-                    <select name="patientId" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+                    <select name="consultationId" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
                         <option value="">-- Choisir un patient --</option>
-                        <c:forEach var="p" items="${patients}">
-                            <option value="${p.id}">${p.lastName} ${p.firstName} (N°: ${p.socialSecurityNumber})</option>
+                        <c:forEach var="item" items="${pendingConsultations}">
+                            <option value="${item.consultationId}">${item.patient.lastName} ${item.patient.firstName} (N°: ${item.patient.socialSecurityNumber})</option>
                         </c:forEach>
                     </select>
                 </div>
@@ -61,7 +73,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Observations</label>
-                    <textarea name="observations" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"></textarea>
+                    <textarea name="observations" required rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"></textarea>
                 </div>
 
                 <div>
@@ -71,7 +83,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Traitement Prescrit</label>
-                    <textarea name="prescribedTreatment" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"></textarea>
+                    <textarea name="prescribedTreatment" required rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"></textarea>
                 </div>
 
                 <!-- Tarif Fixe -->
@@ -93,26 +105,26 @@
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <c:forEach var="p" items="${patients}">
+                <c:forEach var="item" items="${pendingConsultations}">
                     <div class="border rounded-xl p-4 bg-slate-50 hover:border-teal-400 transition shadow-sm">
                         <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold text-slate-800 text-base">${p.firstName} ${p.lastName}</h3>
+                            <h3 class="font-bold text-slate-800 text-base">${item.patient.firstName} ${item.patient.lastName}</h3>
                             <span class="text-xs bg-teal-100 text-teal-800 font-semibold px-2 py-0.5 rounded">
-                                SS: ${p.socialSecurityNumber}
+                                Consultation #${item.consultationId}
                             </span>
                         </div>
-                        <p class="text-xs text-slate-500 mb-3">Né(e) le: ${p.birthDate}</p>
+                        <p class="text-xs text-slate-500 mb-3">Né(e) le: ${item.patient.birthDate} — SS: ${item.patient.socialSecurityNumber}</p>
 
                         <div class="grid grid-cols-2 gap-2 text-xs bg-white p-2.5 rounded-lg border border-slate-200">
-                            <div><span class="text-slate-400">Tension:</span> <strong>${p.bloodPressure}</strong></div>
-                            <div><span class="text-slate-400">Pouls:</span> <strong>${p.heartRate} BPM</strong></div>
-                            <div><span class="text-slate-400">Temp.:</span> <strong>${p.temperature} °C</strong></div>
-                            <div><span class="text-slate-400">Resp.:</span> <strong>${p.respiratoryRate} /min</strong></div>
+                            <div><span class="text-slate-400">Tension:</span> <strong>${item.patient.bloodPressure}</strong></div>
+                            <div><span class="text-slate-400">Pouls:</span> <strong>${item.patient.heartRate} BPM</strong></div>
+                            <div><span class="text-slate-400">Temp.:</span> <strong>${item.patient.temperature} °C</strong></div>
+                            <div><span class="text-slate-400">Resp.:</span> <strong>${item.patient.respiratoryRate} /min</strong></div>
                         </div>
                     </div>
                 </c:forEach>
 
-                <c:if test="${empty patients}">
+                <c:if test="${empty pendingConsultations}">
                     <div class="col-span-2 text-center py-12 text-slate-400 italic">
                         Aucun patient disponible dans la file d'attente.
                     </div>

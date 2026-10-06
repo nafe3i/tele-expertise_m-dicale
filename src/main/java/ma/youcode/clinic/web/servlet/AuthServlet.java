@@ -11,10 +11,10 @@ import jakarta.servlet.http.HttpSession;
 import ma.youcode.clinic.config.ApplicationContextListener;
 import ma.youcode.clinic.service.AuthenticationException;
 import ma.youcode.clinic.service.UserService;
+import ma.youcode.clinic.entity.Role;
 import ma.youcode.clinic.web.security.AuthenticatedUser;
 import ma.youcode.clinic.web.security.CsrfTokenManager;
 import ma.youcode.clinic.web.security.SessionAttributes;
-import  ma.youcode.clinic.entity.Role;
 
 @WebServlet(urlPatterns = {"/login", "/logout"})
 public class AuthServlet extends HttpServlet {
@@ -38,7 +38,7 @@ public class AuthServlet extends HttpServlet {
         }
         AuthenticatedUser user = getAuthenticatedUser(request);
         if (user != null) {
-            showConnectedPage(request, response, user);
+            redirectToDashboard(request, response, user);
             return;
         }
         showLoginForm(request, response, null);
@@ -55,9 +55,10 @@ public class AuthServlet extends HttpServlet {
             AuthenticatedUser user = userService.authenticate(
                 request.getParameter("username"), request.getParameter("password")
             );
+            HttpSession session = request.getSession();
             request.changeSessionId();
-            request.getSession().setAttribute(SessionAttributes.AUTHENTICATED_USER, user);
-            response.sendRedirect(request.getContextPath() + "/login");
+            session.setAttribute(SessionAttributes.AUTHENTICATED_USER, user);
+            redirectToDashboard(request, response, user);
         } catch (AuthenticationException exception) {
             showLoginForm(request, response, exception.getMessage());
         }
@@ -88,16 +89,21 @@ public class AuthServlet extends HttpServlet {
         return user instanceof AuthenticatedUser ? (AuthenticatedUser) user : null;
     }
 
-    private void showConnectedPage(HttpServletRequest request, HttpServletResponse response,
-                                   AuthenticatedUser user) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        request.setAttribute("authenticatedUser", user);
-        request.setAttribute("csrfToken", csrfTokenManager.getOrCreate(session));
-        if(user.getRole().equals(Role.INFIRMIER)){
-            request.getRequestDispatcher("/WEB-INF/views/auth/dashboard-infirmier.jsp").forward(request, response);
-            return ;
+    private void redirectToDashboard(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticatedUser user
+    ) throws IOException {
+        if (user.getRole() == Role.INFIRMIER) {
+            response.sendRedirect(
+                    request.getContextPath() + "/nurse/patients"
+            );
+            return;
         }
-        request.getRequestDispatcher("/WEB-INF/views/auth/dashboard-medecin.jsp").forward(request, response);
+
+        response.sendRedirect(
+                request.getContextPath() + "/doctor/consultations"
+        );
     }
 
     private boolean isLogoutRequest(HttpServletRequest request) {

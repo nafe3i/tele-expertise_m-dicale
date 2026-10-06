@@ -65,10 +65,9 @@ public class JdbcConsultationDAO implements ConsultationDAO {
 
         try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(
                 INSERT_SQL,
-                Statement.RETURN_GENERATED_KEYS
+            Statement.RETURN_GENERATED_KEYS
         )) {
             statement.setLong(1, consultation.getPatientId());
-            // statement.setString(2, Consultation.getStatus());
             statement.setString(2, consultation.getStatus().name());
 
             int affectedRows = statement.executeUpdate();
@@ -113,7 +112,6 @@ public class JdbcConsultationDAO implements ConsultationDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Error updating consultation", e);
         }
-        // return null;
     }
 
     @Override

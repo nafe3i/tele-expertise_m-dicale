@@ -24,22 +24,11 @@ public class PatientService {
     }
 
     public Patient registerArrival(Patient patient) {
-        // if (patient == null) {
-        //     throw new IllegalArgumentException(
-        //             "Le patient est obligatoire."
-        //     );
-        // }
         validatePatient(patient);
 
         String socialSecurityNumber
                 = patient.getSocialSecurityNumber();
 
-        // if (socialSecurityNumber == null
-        //         || socialSecurityNumber.isBlank()) {
-        //     throw new IllegalArgumentException(
-        //             "Le numéro de sécurité sociale est obligatoire."
-        //     );
-        // }
         Optional<Patient> existingPatient
                 = patientDAO.findBySocialSecurityNumber(
                         socialSecurityNumber
@@ -48,7 +37,6 @@ public class PatientService {
         Patient registeredPatient;
 
         if (existingPatient.isEmpty()) {
-            // patient.setArrivedAt(LocalDateTime.now());
             registeredPatient = patientDAO.save(patient);
         } else {
             Patient patientToUpdate = existingPatient.get();
@@ -65,16 +53,10 @@ public class PatientService {
             patientToUpdate.setRespiratoryRate(
                     patient.getRespiratoryRate()
             );
-            // patientToUpdate.setArrivedAt(
-            //         LocalDateTime.now()
-            // );
-
             registeredPatient
                     = patientDAO.updateVitalSigns(patientToUpdate);
         }
-        // Consultation consultation = new Consultation();
-        // consultation.setPatientId(registeredPatient.getId());
-        // consultation.setStatus(ConsultationStatus.EN_ATTENTE);
+
         Consultation consultation = new Consultation(
                 null,
                 registeredPatient.getId(),
@@ -84,24 +66,6 @@ public class PatientService {
 
         return registeredPatient;
     }
-
-    // public List<Patient> findPatientTodayEnAttene() {
-    //     List<Consultation> consultations
-    //             = consultationDAO.findPendingByDate(
-    //                     java.time.LocalDate.now()
-    //             );
-
-    //     List<Patient> patients = new ArrayList<>();
-
-    //     for (Consultation consultation : consultations) {
-    //         Optional<Patient> patientOptional
-    //                 = patientDAO.findById(consultation.getPatientId());
-
-    //         patientOptional.ifPresent(patients::add);
-    //     }
-
-    //     return patients;
-    // }
 
     public List<Patient> findPatientsArrivedToday() {
         LocalDate today = LocalDate.now();
