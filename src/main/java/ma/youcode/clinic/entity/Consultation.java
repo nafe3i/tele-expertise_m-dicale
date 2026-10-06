@@ -3,7 +3,6 @@ package ma.youcode.clinic.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 public class Consultation {
 
     private Long id;
@@ -17,12 +16,19 @@ public class Consultation {
     private ConsultationStatus status;
     private LocalDateTime closedAt;
 
-    public Consultation() {
+    public Consultation(
+            Long id,
+            Long patientId,
+            ConsultationStatus status
+    ) {
+        this.id = id;
+        this.patientId = patientId;
+        this.status = status;
     }
 
     public Consultation(Long id, Long patientId, Long doctorId, String reason,
-                        String observations, String diagnosis, String prescribedTreatment,
-                        BigDecimal cost, ConsultationStatus status, LocalDateTime closedAt) {
+            String observations, String diagnosis, String prescribedTreatment,
+            BigDecimal cost, ConsultationStatus status, LocalDateTime closedAt) {
         this.id = id;
         this.patientId = patientId;
         this.doctorId = doctorId;
